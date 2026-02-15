@@ -23,13 +23,12 @@ class NodesGroup:
         while node_queue:
             node = node_queue.pop(0)
             node.execute()
-            for output_socket in node.outputSockets:
+            for output_socket in node.outputSockets.values():
                 for link in output_socket.link:
                     next_node = link.socket_to.node
                     if next_node.is_ready() and next_node not in node_queue:
                         node_queue.append(next_node)
 
-                        
     def _test_async_execute(self):
         node_queue = [node for node in self.nodes.values() if node.is_begin_node()]
         nodes_threads = []
@@ -50,3 +49,9 @@ class NodesGroup:
                         if next_node.is_ready() and next_node not in node_queue:
                             node_queue.append(next_node)
     
+    def _serialize(self):
+        return {
+            "group_uuid": self.uuid,
+            "nodes": [node._serialize() for node in self.nodes.values()],
+            "links": [link._serialize() for link in self.links]
+        }

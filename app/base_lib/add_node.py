@@ -1,18 +1,19 @@
 from core.node import Node
-
+from core.serializer import register_node
+@register_node
 class add_node(Node):
     def __init__(self, name=None):
         super().__init__(name)
-        self.a = self.add_input_socket("a", int)
-        self.b = self.add_input_socket("b", int)
-        self.result = self.add_output_socket("result", int)
+        self._a = self.add_input_socket("a", int)
+        self._b = self.add_input_socket("b", int)
+        self._result = self.add_output_socket("result", int)
 
     def execute(self):
         print(f"Executing {self.name}...")
-        a = self.inputSockets[0].read()
-        b = self.inputSockets[1].read()
+        a = self.inputSockets["a"].read()
+        b = self.inputSockets["b"].read()
         print(f"Read inputs: a={a}, b={b}")
         if a is not None and b is not None:
             r = a + b
-            self.result.write(r)
+            self._result.write(r)
             print(f"Wrote result: {r}")
