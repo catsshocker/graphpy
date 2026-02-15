@@ -13,6 +13,7 @@ if __name__ == "__main__":
     turtle_turn = G.add_node(turtle_turn_node("turtle_turn"))
     turtle_forward2 = G.add_node(turtle_forward_node("turtle_forward2"))
     turtle_done = G.add_node(turtle_done_node("turtle_done"))
+    
     G.add_link(const1.out, turtle_forward1.distance)
     G.add_link(const2.out, turtle_turn.angle)
     G.add_link(const1.out, turtle_forward2.distance)
