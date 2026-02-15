@@ -12,7 +12,7 @@ class NodeSocket:
         self.node = node
         self.direction = direction
         self.dataType = dataType
-        self.link: list[Link] = []
+        self.link = []
         self.value = None
         self._is_ready = False
 
