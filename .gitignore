@@ -1,0 +1,15 @@
+# Python 暫存檔
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 虛擬環境 (如果你有用的話)
+venv/
+.venv/
+env/
+.env/
+
+# IDE 設定檔 (選配，通常建議濾掉)
+.vscode/
+.idea/

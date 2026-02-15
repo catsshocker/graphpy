@@ -6,7 +6,7 @@ class SocketDirection(Enum):
     OUTPUT = auto()
 
 
-class Socket:
+class NodeSocket:
     def __init__(self, node, name, direction:SocketDirection, dataType):
         self.name = name
         self.node = node
@@ -14,18 +14,19 @@ class Socket:
         self.dataType = dataType
         self.link: list[Link] = []
         self.value = None
+        self._is_ready = False
 
-    def read(self):
-        if self.direction == SocketDirection.INPUT:
-            if self.link:
-                return self.link[0].socket_from.read()
-            else:
-                return None
-        else:
-            return self.value
-        
     def write(self, value):
         if self.direction == SocketDirection.OUTPUT:
             self.value = value
+            for link in self.link:
+                link.socket_to._last_node_velue_write(value)
         else:
             raise Exception("Cannot write to an input socket")
+        
+    def _last_node_velue_write(self, value):
+        self.value = value
+        self._is_ready = True
+
+    def read(self):
+        return self.value

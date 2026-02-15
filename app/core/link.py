@@ -1,7 +1,7 @@
-from .nodeSocket import Socket
+from .nodeSocket import NodeSocket
 
 class Link:
-    def __init__(self, socket_from:Socket, socket_to:Socket):
+    def __init__(self, socket_from:NodeSocket, socket_to:NodeSocket):
         self.socket_from = socket_from
         self.socket_to = socket_to
 

@@ -1,6 +1,7 @@
 from .node import Node
 from .link import Link
 from uuid import uuid4
+import threading
 
 class NodesGroup:
     def __init__(self):
@@ -18,9 +19,34 @@ class NodesGroup:
         return newLink
     
     def execute(self):
-        """
-        簡易的執行邏輯：目前先照加入順序執行
-        未來可以在這裡加入拓撲排序
-        """
-        for node in self.nodes.values():
+        node_queue = [node for node in self.nodes.values() if node.is_begin_node()]
+        while node_queue:
+            node = node_queue.pop(0)
             node.execute()
+            for output_socket in node.outputSockets:
+                for link in output_socket.link:
+                    next_node = link.socket_to.node
+                    if next_node.is_ready() and next_node not in node_queue:
+                        node_queue.append(next_node)
+
+                        
+    def _test_async_execute(self):
+        node_queue = [node for node in self.nodes.values() if node.is_begin_node()]
+        nodes_threads = []
+        while node_queue:
+            for node in node_queue:
+                thread = threading.Thread(target=node.execute)
+                thread.start()
+                nodes_threads.append(thread)
+            for thread in nodes_threads:
+                thread.join()
+            nodes_threads.clear()
+            node_queue_buf = node_queue.copy()
+            node_queue.clear()
+            for node in node_queue_buf:
+                for output_socket in node.outputSockets:
+                    for link in output_socket.link:
+                        next_node = link.socket_to.node
+                        if next_node.is_ready() and next_node not in node_queue:
+                            node_queue.append(next_node)
+    

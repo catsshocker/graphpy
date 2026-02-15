@@ -1,6 +1,6 @@
 from core.node import Node
 
-class add_node(Node):
+class mul_node(Node):
     def __init__(self, name=None):
         super().__init__(name)
         self.a = self.add_input_socket("a", int)
@@ -9,10 +9,10 @@ class add_node(Node):
 
     def execute(self):
         print(f"Executing {self.name}...")
-        a = self.inputSockets[0].read()
-        b = self.inputSockets[1].read()
+        a = self.a.read()
+        b = self.b.read()
         print(f"Read inputs: a={a}, b={b}")
         if a is not None and b is not None:
-            r = a + b
+            r = a * b
             self.result.write(r)
             print(f"Wrote result: {r}")
