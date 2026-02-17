@@ -26,6 +26,6 @@ if __name__ == "__main__":
 
     G = GraphLoader.load_from_file("000.json")
     G.execute()
-    # print(G._serialize())
+    print(G._serialize())
     # GraphSerializer.save_to_file(G,"000.json")
     # G._test_async_execute()
