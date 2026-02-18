@@ -20,6 +20,7 @@ class NodesGroup:
     
     def execute(self):
         node_queue = [node for node in self.nodes.values() if node.is_begin_node()]
+        print(f"Initial node queue: {[node.name for node in node_queue]}")
         while node_queue:
             node = node_queue.pop(0)
             node.execute()

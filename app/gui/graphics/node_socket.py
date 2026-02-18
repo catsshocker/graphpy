@@ -9,8 +9,10 @@ class SocketUI(QGraphicsEllipseItem):
     def __init__(self, socket_core, parent_node_ui, is_input=True):
         super().__init__(-6, -6, 12, 12, parent_node_ui)
         self.socket_core = socket_core
-        self.parent_node_ui = parent_node_ui
-        self.is_input = is_input
+        # self.parent_node_ui = parent_node_ui
+        self._is_input = is_input
+
+        self.links = [] # 這裡存 LinkUI 的實例，方便更新外觀
         
         self.setBrush(QBrush(QColor("#f1c40f")))
         
@@ -18,7 +20,7 @@ class SocketUI(QGraphicsEllipseItem):
         self.label = QGraphicsTextItem(self.socket_core.name, self)
         self.label.setDefaultTextColor(Qt.lightGray)
 
-        if self.is_input:
+        if self._is_input:
             # 輸入項：圓圈在左，文字在圓圈右邊
             self.label.setPos(12, -12) 
         else:
@@ -28,7 +30,7 @@ class SocketUI(QGraphicsEllipseItem):
 
         # 只有「輸入型」的 Socket 且「沒接線」時才需要輸入框
         self.proxy_widget = None
-        if self.is_input:
+        if self._is_input:
             self.init_input_widget()
 
     def init_input_widget(self):
@@ -54,6 +56,7 @@ class SocketUI(QGraphicsEllipseItem):
     def on_value_change(self, text):
         try:
             self.socket_core.value = float(text)
+            print(f"Socket {self.socket_core.name} 的值更新為 {self.socket_core.value}")
         except ValueError:
             pass
 
@@ -70,3 +73,31 @@ class SocketUI(QGraphicsEllipseItem):
             else:
                 self.setBrush(QBrush(QColor("#f1c40f"))) # 黃色
                 if self.proxy_widget: self.proxy_widget.show() # 沒線，顯示輸入框
+
+
+    def mousePressEvent(self, event):
+        super().mousePressEvent(event)
+
+    @property
+    def scene_pos(self):
+        """回傳 Socket 圓心的世界座標 (Scene Position)"""
+        # mapToScene(0, 0) 會把本地座標的中心點轉為畫布座標
+        return self.mapToScene(0, 0)
+    
+    # 順便檢查這兩個屬性是否也有定義，因為 LinkHandler 會用到
+    @property
+    def is_input(self):
+        return self.socket_core.direction == SocketDirection.INPUT
+
+    @property
+    def parent_node_ui(self):
+        # 這裡回傳它的父物件，也就是 NodeUI
+        return self.parentItem()
+    
+    def update_links(self):
+        for link in self.links:
+            link.update_path()
+
+    def add_link(self, link_ui):
+        self.links.append(link_ui)
+        self.update_appearance()

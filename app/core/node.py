@@ -49,8 +49,10 @@ class Node:
     
     def serialize_parm(self):
         """子類實作，回傳一個 dict，包含節點特有的參數"""
-        return {}
+        return {s.name: s.value for s in self.inputSockets.values()}
     
     def load_parm(self, parm_dict):
         """子類實作，從 dict 載入節點特有的參數"""
-        pass
+        for name, value in parm_dict.items():
+            if name in self.inputSockets:
+                self.inputSockets[name].value = value

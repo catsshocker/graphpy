@@ -32,14 +32,11 @@ class NodeSocket:
         
     def is_ready(self):
         """已經收到前一級的資料了"""
-        if self.is_linked():
+        if self.is_linked() or self.inputMode != SocketInputMode.LINK_ONLY:
             return self._is_ready
         else:
-            if self.inputMode !=SocketInputMode.LINK_ONLY:
-                return True 
-            else:
-                raise Exception("This socket is link-only but has no link")
-                return False
+            raise Exception("This socket is link-only but has no link")
+            return False
     
     def is_linked(self):
         """有沒有連接線"""
@@ -47,7 +44,7 @@ class NodeSocket:
     
     def is_begin_socket(self):
         """判斷是否為起始插槽：沒有任何連結的輸入插槽"""
-        return self.direction == SocketDirection.INPUT and not self.is_linked()
+        return self.direction == SocketDirection.INPUT and not self.is_linked() or self.inputMode == SocketInputMode.KEYIN_ONLY
     
 
     def _last_node_velue_write(self, value):

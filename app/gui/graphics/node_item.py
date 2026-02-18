@@ -1,5 +1,5 @@
 # node_item.py
-from PySide6.QtWidgets import QGraphicsPathItem, QGraphicsTextItem, QGraphicsItem
+from PySide6.QtWidgets import QGraphicsPathItem, QGraphicsTextItem, QGraphicsItem#, ItemSendsGeometryChanges , ItemPositionHasChanged
 from PySide6.QtGui import QColor, QPainterPath, QBrush
 from PySide6.QtCore import Qt
 
@@ -25,7 +25,8 @@ class NodeUI(QGraphicsPathItem):
         self.setFlags(
             QGraphicsItem.GraphicsItemFlag.ItemIsMovable |
             QGraphicsItem.GraphicsItemFlag.ItemIsSelectable |
-            QGraphicsItem.GraphicsItemFlag.ItemSendsScenePositionChanges
+            QGraphicsItem.GraphicsItemFlag.ItemSendsScenePositionChanges |
+            QGraphicsItem.ItemSendsGeometryChanges
         )
 
     def init_ui(self):
@@ -58,3 +59,16 @@ class NodeUI(QGraphicsPathItem):
             y_pos = self.header_height + i * self.socket_spacing + 15
             s_ui.setPos(self.width, y_pos)
             self.outputs_ui.append(s_ui)
+
+    def itemChange(self, change, value):
+        """當節點移動時，會觸發這個函式"""
+        if change == QGraphicsItem.ItemPositionHasChanged:
+            # 找到所有連接在這個節點上的線，叫它們 update_path
+            self.update_connected_links()
+        return super().itemChange(change, value)
+
+    def update_connected_links(self):
+        # 遍歷所有的 Socket，再從 Socket 找連線
+        # 這裡我們需要一個機制讓 Socket 知道自己連了哪些線
+        for socket_ui in self.inputs_ui + self.outputs_ui:
+            socket_ui.update_links()
