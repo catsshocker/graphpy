@@ -1,7 +1,5 @@
 from core.node import Node
 from core.nodeSocket import SocketInputMode
-from core.serializer import register_node
-@register_node
 class const_node(Node):
     def __init__(self, name = None, value = None):
         super().__init__(name)

@@ -19,7 +19,7 @@ class NodeSocket:
         self.dataType = dataType
         self.inputMode = inputMode # 預設輸入模式
         self.link = []
-        self.value = dataType() # 預設值，例如 float 就是 0.0
+        self.value = 0 # 預設值 0.0
         self._is_ready = False if self.inputMode == SocketInputMode.LINK_ONLY else True
 
     def write(self, value):
@@ -53,3 +53,7 @@ class NodeSocket:
 
     def read(self):
         return self.value
+    
+    def _reset(self):
+        """重置插槽狀態，通常在節點執行前呼叫，確保插槽回到初始狀態"""
+        self._is_ready = False if self.inputMode == SocketInputMode.LINK_ONLY else True

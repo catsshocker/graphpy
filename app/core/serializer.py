@@ -1,25 +1,7 @@
 import json
 from .group import NodesGroup
+from .registry import NodeRegistry
 
-NODE_REGISTRY = {} #函數節點註冊表
-
-def register_node(cls):
-    """
-    註冊節點並防止名稱衝突
-    """
-    node_name = cls.__name__
-    
-    if node_name in NODE_REGISTRY:
-        # 取得已存在類別的路徑，方便除錯
-        existing_cls = NODE_REGISTRY[node_name]
-        raise RuntimeError(
-            f"❌ 節點名稱衝突！'{node_name}' 已經被註冊過。\n"
-            f"已有類別：{existing_cls.__module__}.{existing_cls.__name__}\n"
-            f"當前類別：{cls.__module__}.{cls.__name__}\n"
-            f"請確保節點類別名稱是唯一的。"
-        )
-    NODE_REGISTRY[node_name] = cls
-    return cls
 
 class GraphSerializer:
     """負責將 NodesGroup 轉為字典"""    
@@ -31,7 +13,7 @@ class GraphSerializer:
         with open(filename, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
         print(f"成功存檔至: {filename}")
-        print(NODE_REGISTRY)
+        print(NodeRegistry.registry())
         # with open(filename+"nodes", 'w', encoding='utf-8') as f:
             # json.dump(NODE_REGISTRY, f, indent=4, ensure_ascii=False)
 
@@ -58,7 +40,7 @@ class GraphLoader:
     @staticmethod
     def _deserialize_node(node_data):
         class_name = node_data["class"]
-        node_cls = NODE_REGISTRY.get(class_name)
+        node_cls = NodeRegistry.registry().get(class_name)
         if not node_cls:
             raise ValueError(f"未找到節點類別: {class_name}")
         node = node_cls(node_data["name"])

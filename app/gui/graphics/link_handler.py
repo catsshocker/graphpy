@@ -1,6 +1,7 @@
 # gui/graphics/link_handler.py
 
 from core.group import NodesGroup
+from core.nodeSocket import SocketInputMode, SocketDirection
 
 class LinkHandler:
     def __init__(self, scene,group: NodesGroup):
@@ -9,6 +10,14 @@ class LinkHandler:
         self.active_link = None  # 存放拉線中的 UI 物件
 
     def handle_click(self, socket_ui):
+        if socket_ui.socket_core.inputMode == SocketInputMode.KEYIN_ONLY:
+            print("這個 Socket 是 KEYIN_ONLY 模式，不能連線")
+            return
+        
+        if socket_ui.socket_core.direction == SocketDirection.INPUT and socket_ui.links:
+            print("這個輸入 Socket 已經有連線了，不能再連")
+            return
+
         """核心狀態切換：第一次點擊 vs 第二次點擊"""
         if self.active_link is None:
             self._start_link(socket_ui)
@@ -26,6 +35,15 @@ class LinkHandler:
         print(f"嘗試連線：{self.active_link.start_socket_ui.socket_core} -> {end_socket_ui.socket_core}")
         if self.active_link is None:
             print("錯誤❗：沒有正在連線的物件")
+            return
+        
+        if end_socket_ui.socket_core.inputMode == SocketInputMode.KEYIN_ONLY:
+            print("這個 Socket 是 KEYIN_ONLY 模式，不能連線")
+            self.cancel()
+            return
+        
+        if end_socket_ui.socket_core.direction == SocketDirection.INPUT and end_socket_ui.links:
+            print("這個輸入 Socket 已經有連線了，不能再連")
             return
 
         start_socket_ui = self.active_link.start_socket_ui

@@ -15,10 +15,14 @@ class SocketUI(QGraphicsEllipseItem):
         self.links = [] # 這裡存 LinkUI 的實例，方便更新外觀
         
         self.setBrush(QBrush(QColor("#f1c40f")))
+        self.setZValue(1)
         
         # 畫標籤
-        self.label = QGraphicsTextItem(self.socket_core.name, self)
+        label_text = self.socket_core.name if len(self.socket_core.name) < 10 else self.socket_core.name[:7] + "..."
+        self.label = QGraphicsTextItem(label_text, self)
         self.label.setDefaultTextColor(Qt.lightGray)
+
+        self.label.setAcceptedMouseButtons(Qt.NoButton)
 
         if self._is_input:
             # 輸入項：圓圈在左，文字在圓圈右邊

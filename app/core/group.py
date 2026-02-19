@@ -29,6 +29,9 @@ class NodesGroup:
                     next_node = link.socket_to.node
                     if next_node.is_ready() and next_node not in node_queue:
                         node_queue.append(next_node)
+        
+        for node in self.nodes.values():
+            node._reset() # 執行完後重置節點狀態，確保下次執行時從乾淨狀態開始
 
     def _test_async_execute(self):
         node_queue = [node for node in self.nodes.values() if node.is_begin_node()]
@@ -49,6 +52,9 @@ class NodesGroup:
                         next_node = link.socket_to.node
                         if next_node.is_ready() and next_node not in node_queue:
                             node_queue.append(next_node)
+
+        for node in self.nodes.values():
+            node._reset() # 執行完後重置節點狀態，確保下次執行時從乾淨狀態開始
     
     def _serialize(self):
         return {

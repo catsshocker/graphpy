@@ -6,7 +6,6 @@ from PySide6.QtCore import Qt
 
 # 導入你的新類別 (路徑請根據你的資料夾調整)
 from gui.graphics.factory import NodeFactory
-from gui.graphics.link_handler import LinkHandler
 from gui.graphics.node_scene import NodeScene
 
 from core.group import NodesGroup 
@@ -35,23 +34,16 @@ class NodeEditorWindow(QMainWindow):
         # 設定為主視窗中心
         self.setCentralWidget(self.view)
 
-        self.link_handler = LinkHandler(self.scene, group = self.group) # 把 group 傳給 link_handler，讓它能在建立連線時更新 group 的資料
-
         # 3. 測試：使用「靈魂+身體」模式產生節點
-        self.create_test_node(add_node)
-        self.create_test_node(add_node)
-        self.create_test_node(mul_node)
-        self.create_test_node(const_node)
-        self.create_test_node(print_node)
-        self.create_test_node(print_node)
-        self.create_test_node(print_node)
+        # self.create_test_node(add_node)
+        # self.create_test_node(add_node)
+        # self.create_test_node(mul_node)
+        # self.create_test_node(const_node)
+        # self.create_test_node(print_node)
+        # self.create_test_node(print_node)
+        # self.create_test_node(print_node)
         
 
-    def create_test_node(self,node_class=add_node):
-        # # 這裡模擬原本應該由 Factory 或 Core 產生的資料
-        NodeFactory.spawn_node(node_class, self.scene, self.group)
+    # def create_test_node(self,node_class=add_node):
+    #     NodeFactory.spawn_node(node_class, self.scene, self.group)
 
-    def mouseMoveEvent(self, event):
-        scene_pos = self.view.mapToScene(self.view.mapFromGlobal(event.globalPos()))
-        self.link_handler.update_drag(scene_pos)
-        super().mouseMoveEvent(event)

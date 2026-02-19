@@ -1,6 +1,4 @@
 from core.node import Node
-from core.serializer import register_node
-@register_node
 class mul_node(Node):
     def __init__(self, name=None):
         super().__init__(name)

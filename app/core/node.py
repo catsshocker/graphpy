@@ -1,9 +1,12 @@
 import uuid
 from .nodeSocket import NodeSocket, SocketDirection, SocketInputMode
 from .link import Link
+from .registry import NodeRegistry
 
 
 class Node:
+    def __init_subclass__(cls):
+        NodeRegistry.register(cls)
     def __init__(self, name=None):
         self.uuid = str(uuid.uuid4())
         self.name = name if name is not None else self.__class__.__name__
@@ -44,6 +47,7 @@ class Node:
             "uuid": self.uuid,
             "class": self.__class__.__name__,
             "name": self.name,
+            "ui_data": self.ui_data,
             "param": self.serialize_parm(),
         }
     
@@ -56,3 +60,10 @@ class Node:
         for name, value in parm_dict.items():
             if name in self.inputSockets:
                 self.inputSockets[name].value = value
+
+    def _reset(self):
+        """重置節點狀態，通常在執行前呼叫，確保節點回到初始狀態"""
+        for s in self.inputSockets.values():
+            s._reset()
+        for s in self.outputSockets.values():
+            s._reset()
