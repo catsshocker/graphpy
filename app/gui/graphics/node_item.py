@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QGraphicsPathItem, QGraphicsTextItem, QGraphicsIte
 from PySide6.QtGui import QColor, QPainterPath, QBrush
 from PySide6.QtCore import Qt
 
-from .node_socket import SocketUI 
+from gui.graphics.node_socket import SocketUI 
 
 class NodeUI(QGraphicsPathItem):
     def __init__(self, node_core):
@@ -72,3 +72,14 @@ class NodeUI(QGraphicsPathItem):
         # 這裡我們需要一個機制讓 Socket 知道自己連了哪些線
         for socket_ui in self.inputs_ui + self.outputs_ui:
             socket_ui.update_links()
+
+    def destroy(self):
+        """刪除這個節點和相關連線"""
+        # 先刪除連線
+        for socket_ui in self.inputs_ui + self.outputs_ui:
+            socket_ui.destroy()
+        # 再從畫布上刪除自己
+        self.node_core.destroy() # 別忘了先刪除核心邏輯，避免殘留資料
+        scene = self.scene()
+        if scene:
+            scene.removeItem(self)

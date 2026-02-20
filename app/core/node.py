@@ -10,6 +10,7 @@ class Node:
     def __init__(self, name=None):
         self.uuid = str(uuid.uuid4())
         self.name = name if name is not None else self.__class__.__name__
+        self.group = None 
         self.inputSockets = {}
         self.outputSockets = {}
         self.ui_data = {"pos": [0, 0]} # 用來儲存 UI 相關的資料，例如位置
@@ -67,3 +68,6 @@ class Node:
             s._reset()
         for s in self.outputSockets.values():
             s._reset()
+
+    def destroy(self):
+        self.group.delete_node(self.uuid)

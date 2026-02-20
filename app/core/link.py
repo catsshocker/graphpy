@@ -10,7 +10,7 @@ class Link:
         self.socket_from.link.append(self)
         self.socket_to.link.append(self)
 
-    def __del__(self):
+    def disconnect(self):
         self.socket_from.link.remove(self)
         self.socket_to.link.remove(self)
 

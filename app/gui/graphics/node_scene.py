@@ -7,8 +7,10 @@ from .node_socket import SocketUI
 from core.serializer import GraphSerializer
 from .link_handler import LinkHandler 
 from core.registry import NodeRegistry
+from gui.graphics.node_item import NodeUI
 
 from gui.graphics.factory import NodeFactory
+from .link_ui import LinkUI
 
 class NodeScene(QGraphicsScene):
     def __init__(self, parent=None):
@@ -44,6 +46,25 @@ class NodeScene(QGraphicsScene):
             print(NodeRegistry.registry())
             self.parent.group.execute()
             event.accept()
+
+        elif event.key() == Qt.Key.Key_Escape:
+            self.cancel_ongoing_actions()
+            event.accept()
+
+        elif event.key() == Qt.Key.Key_Delete:
+            # 取得目前選中的所有物件 (QGraphicsScene.selectedItems)
+            selected_items = self.selectedItems()
+            
+            for item in selected_items:
+                # 確保我們只對 NodeUI 進行刪除
+                if isinstance(item, NodeUI):
+                    item.destroy()
+                # 如果使用者單獨選中了線段 Link，也可以在這邊處理
+                elif isinstance(item, LinkUI):
+                    print("刪除連線")
+                    item.destroy()
+            event.accept()
+
         else:
             super().keyPressEvent(event)
 
@@ -73,3 +94,11 @@ class NodeScene(QGraphicsScene):
             )
 
         menu.exec(event.screenPos())
+
+    def cancel_ongoing_actions(self):
+        """取消當前進行中的所有互動動作"""
+        # 1. 處理連線中的狀態
+        if hasattr(self, 'link_handler'):
+            # 假設你的 link_handler 有一個方法來處理取消
+            self.link_handler.abort_link()
+            print("【Scene】連線動作已取消")

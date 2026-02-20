@@ -7,7 +7,7 @@ class NodesGroup:
     def __init__(self):
         self.uuid = str(uuid4())
         self.nodes = {}
-        self.links = []
+        self.links = {}
 
     def add_node(self, node:Node):
         self.nodes[node.uuid] = node
@@ -15,7 +15,7 @@ class NodesGroup:
     
     def add_link(self, socket_from, socket_to):
         newLink = Link(socket_from, socket_to)
-        self.links.append(newLink)
+        self.links[newLink.uuid] = newLink
         return newLink
     
     def execute(self):
@@ -60,5 +60,21 @@ class NodesGroup:
         return {
             "group_uuid": self.uuid,
             "nodes": [node._serialize() for node in self.nodes.values()],
-            "links": [link._serialize() for link in self.links]
+            "links": [link._serialize() for link in self.links.values()],
         }
+    
+    def delete_node(self, node_uuid):
+        if node_uuid in self.nodes:
+            # 刪除相關連線
+            node = self.nodes[node_uuid]
+            all_sockets = list(node.inputSockets.values()) + list(node.outputSockets.values())
+            for socket in all_sockets:
+                for link in socket.link[:]:  # 使用 [:] 避免在迭代中修改列表
+                    self.delete_link(link)
+            # 從 group 裡刪除節點
+            del self.nodes[node_uuid]
+
+    def delete_link(self, link_core):
+        if link_core.uuid in self.links:
+            link_core.disconnect() # ⬅️ 關鍵：手動解除核心 Socket 與 Link 的引用
+            del self.links[link_core.uuid]

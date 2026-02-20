@@ -89,9 +89,11 @@ class LinkHandler:
 
 
     def _can_connect(self, s1, s2):
-        # 規則檢查：不能同類型、不能同節點
-        return (s1.is_input != s2.is_input and 
-                s1.parent_node_ui != s2.parent_node_ui)
+        """檢查兩個 Socket 是否可以連線的規則"""
+        if (s1.is_input != s2.is_input and 
+                s1.parent_node_ui != s2.parent_node_ui):
+            return True
+        return False
 
     def update_drag(self, scene_pos):
         """更新橡皮筋位置"""
@@ -104,3 +106,7 @@ class LinkHandler:
         if self.active_link:
             self.scene.removeItem(self.active_link)
             self.active_link = None
+
+    def abort_link(self):
+        """在外部強制終止連線，例如按下 Esc 鍵"""
+        self.cancel()

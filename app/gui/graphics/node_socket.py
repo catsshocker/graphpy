@@ -66,12 +66,13 @@ class SocketUI(QGraphicsEllipseItem):
 
     def update_appearance(self):
         """根據核心數據狀態同步 UI"""
+        linked = self.socket_core.is_linked()
         if self.socket_core.inputMode == SocketInputMode.LINK_ONLY:
             self.proxy_widget.hide() # 連線專用，永遠不顯示輸入框
         if self.socket_core.inputMode == SocketInputMode.KEYIN_ONLY:
             self.setBrush(QBrush(QColor("#1c263b")))
         else:
-            if self.socket_core.is_linked():
+            if linked:
                 self.setBrush(QBrush(QColor("#27ae60"))) # 綠色
                 if self.proxy_widget: self.proxy_widget.hide() # 接線了，隱藏輸入框
             else:
@@ -105,3 +106,18 @@ class SocketUI(QGraphicsEllipseItem):
     def add_link(self, link_ui):
         self.links.append(link_ui)
         self.update_appearance()
+
+    def delete_link(self, link_ui):
+        if link_ui in self.links:
+            self.links.remove(link_ui)
+            self.update_appearance()
+
+    def destroy(self):
+        # 刪除相關連線
+        for link in self.links[:]:
+            link.destroy() # 這裡會從畫布和資料結構中刪除連線
+        self.links.clear()
+        # 從畫布上刪除自己
+        scene = self.scene()
+        if scene:
+            scene.removeItem(self)

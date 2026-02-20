@@ -46,3 +46,20 @@ class LinkUI(QGraphicsPathItem):
         path.moveTo(p1)
         path.cubicTo(p2, p3, p4)
         self.setPath(path)
+
+    def destroy(self):
+        # 1. 先讓資料層斷開 (這會清空 socket_core.link)
+        if self.link_core:
+            node_core = self.link_core.socket_from.node
+            if node_core.group:
+                node_core.group.delete_link(self.link_core)
+
+        # 2. 再叫 UI 端的 Socket 更新 (這時 is_linked() 就會是 False)
+        if self.start_socket_ui:
+            self.start_socket_ui.delete_link(self)
+        if self.end_socket_ui:
+            self.end_socket_ui.delete_link(self)
+
+        # 3. 最後從畫布移除
+        if self.scene():
+            self.scene().removeItem(self)
