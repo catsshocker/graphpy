@@ -22,7 +22,7 @@ class NodesGroup:
         node_queue = [node for node in self.nodes.values() if node.is_begin_node()]
         print(f"Initial node queue: {[node.name for node in node_queue]}")
         if is_async:
-            self._async_execute()
+            self._async_execute(node_queue)
 
             return
         while node_queue:
@@ -64,9 +64,12 @@ class NodesGroup:
 
     def _async_execute(self, node_queue):
         # node_queue = [node for node in self.nodes.values() if node.is_begin_node()]
-        # nodes_threads = []
-        thread = threading.Thread(target=node._execute, args=[node_queue])
-        thread.start()
+        nodes_threads = [threading.Thread(target=node._execute, args=[node_queue]) for node in node_queue]
+        for thread in nodes_threads:
+            thread.start()
+        for thread in nodes_threads:
+            thread.join()
+        del nodes_threads[:]
         # # for node in node_queue:
         # #     nodes_threads.append(thread)
         # for thread in nodes_threads:
@@ -81,7 +84,6 @@ class NodesGroup:
         #             if next_node.is_ready() and next_node not in node_queue:
         #                 node_queue.append(next_node)
 
-        thread.join()
         for node in self.nodes.values():
             node._reset() # 執行完後重置節點狀態，確保下次執行時從乾淨狀態開始
     

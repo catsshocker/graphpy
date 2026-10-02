@@ -43,6 +43,10 @@ class Node:
         """子類實作"""
         pass
 
+    def _execute(self, *args):
+        """子類實作"""
+        pass
+
     def _serialize(self)-> dict:
         return {
             "uuid": self.uuid,
