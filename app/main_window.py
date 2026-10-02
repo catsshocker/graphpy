@@ -1,4 +1,4 @@
-#maim_window.py
+#main_window.py
 import sys
 from PySide6.QtWidgets import QMainWindow, QGraphicsView, QGraphicsScene
 from PySide6.QtGui import QColor, QPainter
